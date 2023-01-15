@@ -22,6 +22,7 @@ public class MemberBase extends BaseTimeEntity {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private Authority authority;
 
     public void updatePassword(String pw) {this.password = pw;}
