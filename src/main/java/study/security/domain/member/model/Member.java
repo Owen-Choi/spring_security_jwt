@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.security.domain.member.dto.MemberDTO;
 import study.security.domain.post.model.Post;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.List;
 
+import static study.security.domain.member.dto.MemberDTO.*;
 import static study.security.domain.member.model.Authority.*;
 
 @Entity
@@ -40,5 +42,17 @@ public class Member extends MemberBase{
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
         this.description = description;
+    }
+
+    public UserInfo toUserInfo() {
+        return UserInfo.builder()
+                .userName(this.userName)
+                .email(getEmail())
+                .phoneNumber(this.phoneNumber)
+                .nickname(this.nickname)
+                .id(this.getId())
+                .birthDate(this.birthDate)
+                .description(this.description)
+                .build();
     }
 }
