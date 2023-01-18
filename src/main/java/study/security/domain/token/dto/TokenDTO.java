@@ -34,4 +34,12 @@ public class TokenDTO {
         private String grantType;
         private Long accessTokenExpiresIn;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AccessTokenDTO{
+        private String accessToken;
+    }
 }

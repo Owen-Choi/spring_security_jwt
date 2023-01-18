@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import study.security.domain.member.dao.MemberRepository;
 import study.security.domain.member.model.Member;
 import study.security.domain.token.dto.TokenDTO;
+import study.security.domain.token.exception.ExpireRefreshTokenException;
+import study.security.domain.token.exception.InvalidRefreshTokenException;
 import study.security.global.common.constants.JwtConstants;
 import study.security.global.error.exception.NotFoundByIdException;
 import study.security.global.jwt.JwtTokenProvider;
@@ -72,5 +74,21 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
+        if (refreshByAccess == null) {
+            throw new ExpireRefreshTokenException();
+        }
+
+        // refresh token이 존재한다면 검증을 실시한다.
+        if(!jwtTokenProvider.validateToken(refreshByAccess)) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        // Access Token 에서 멤버 아이디 가져오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
+    }
 
 }

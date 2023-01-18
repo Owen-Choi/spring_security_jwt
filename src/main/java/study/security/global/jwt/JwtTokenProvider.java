@@ -1,8 +1,6 @@
 package study.security.global.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,7 @@ public class JwtTokenProvider {
 
     public TokenInfoDTO generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
-        // TODO 정확히 이해가 안간다.
+        // TODO 정확히 이해가 안간다. - 아래 코드의 결과로 ROLE_USER가 나오는건가??
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -67,4 +65,21 @@ public class JwtTokenProvider {
 //    public Authentication getAuthentication(String accessToken) {
 //        // 토근 복호화
 //    }
+
+    public boolean validateToken(String token) {
+        try {
+            // 이 코드는 뭐하는 코드지??
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        }catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            log.info("지원하지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
 }
