@@ -74,10 +74,13 @@ public class AuthService {
                 .build();
     }
 
+
+    // refresh가 만료되지 않고 존재한다면 Access를 재발급해서 DB(Redis)에 저장해주는 코드
     @Transactional
     public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
+        // refreshToken이 없으면 만료됐다는 뜻인므로 만료 예외 터뜨려줌.
         if (refreshByAccess == null) {
             throw new ExpireRefreshTokenException();
         }
@@ -88,7 +91,22 @@ public class AuthService {
         }
 
         // Access Token 에서 멤버 아이디 가져오기
+        // jwtTokenProvider.getAuthentication 내부에서 Claim 정보 (토큰 자체에 유저 정보가 있음)를 조회하여 authentication을 발급해준다.
+        // 따라서 얻어온 authentication으로 TokenInfoDto를 발급받아서 redis에 저장하면 해당 사용자의 토큰으로서 사용할 수 있는 것이다.
         Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
+
+        // refresh Token이 만료되지 않았으므로 새로운 Access Token을 발급한다.
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication);
+
+        // 새로 발급한 토큰을 redis에 저장하고,
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+
+        // redis상에서 만료 시간을 설정해줌.
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
+        // 위의 과정을 모두 거친 뒤 토큰을 발급함
+        // 토큰 발급
+        return tokenInfoDTO.toTokenIssueDTO();
     }
 
 }
