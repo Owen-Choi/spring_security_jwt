@@ -18,7 +18,9 @@ import study.security.domain.token.exception.InvalidRefreshTokenException;
 import study.security.global.common.constants.JwtConstants;
 import study.security.global.error.exception.NotFoundByIdException;
 import study.security.global.jwt.JwtTokenProvider;
+import study.security.global.util.SecurityUtil;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static study.security.domain.member.dto.MemberDTO.*;
@@ -107,6 +109,15 @@ public class AuthService {
         // 위의 과정을 모두 거친 뒤 토큰을 발급함
         // 토큰 발급
         return tokenInfoDTO.toTokenIssueDTO();
+    }
+
+    @Transactional
+    public String logout(String token) throws IOException {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
+        valueOperations.getAndDelete(token);
+
+        return "SUCCESS";
     }
 
 }
