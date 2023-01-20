@@ -48,6 +48,16 @@ public class AuthService {
 
     @Transactional
     public UserLoginDTO login(LoginRequest loginRequest) {
+
+        /*
+            Spring Security에서 인증 처리가 일어나는 과정을 코드로 나타내면
+            1. username 과 password를 조합해서 UsernamePasswordAuthenticationToken 인스턴스를 만든다.
+            2. 검증을 위해 AuthenticationManager의 인스턴스에 1번에서 만든 인스턴스를 넘겨준다.
+            3. AuthenticationManager는 인증에 성공하면 Authentication의 인스턴스를 반환한다.
+            4. 3번에서 반환받은 인스턴스를 SecurityContextHolder.getContext().setAuthentication() 해준다.
+            아래 코드에서는 4번 과정이 명시적으로 존재하진 않는데, 어디서 context에 등록을 해주는거지?
+         */
+
         // 1. 이메일, 비밀번호 기반으로 토큰 생성
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
 
@@ -119,5 +129,4 @@ public class AuthService {
 
         return "SUCCESS";
     }
-
 }

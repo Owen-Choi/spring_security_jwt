@@ -37,7 +37,6 @@ public class JwtTokenProvider {
 
     public TokenInfoDTO generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
-        // TODO 정확히 이해가 안간다. - 아래 코드의 결과로 ROLE_USER가 나오는건가??
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
