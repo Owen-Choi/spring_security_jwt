@@ -88,7 +88,7 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RedunCheckDto{
+    public static class RedunCheckDto {
         private boolean exists;
     }
 
@@ -96,7 +96,7 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UserDetail{
+    public static class UserDetail {
         private Long id;
 
         private String userName;
@@ -117,11 +117,62 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateUserInfo{
+    public static class UpdateUserInfo {
         private Long userId;
         private String nickname;
         private String phoneNumber;
         // 프로필사진 등도 원래는 포함되어야 함. 하지만 여기서는 넣지 않겠음;
     }
 
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateMemberNicknameDto {
+        private Long userId;
+        private String newNickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateMemberPhoneNumberDto {
+        private Long userId;
+        private String newPhoneNumber;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NewNicknameDto {
+        private String newNickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NewPhoneNumberDto {
+        private String newPhoneNumber;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateDescriptionDto {
+        private Long userId;
+        private String description;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NewDescriptionDto {
+        private String newDescription;
+    }
 }

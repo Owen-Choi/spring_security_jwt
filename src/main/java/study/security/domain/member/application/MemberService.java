@@ -7,8 +7,11 @@ import study.security.domain.member.dao.MemberRepository;
 import study.security.domain.member.dto.MemberDTO;
 import study.security.domain.member.exception.DuplicateNicknameException;
 import study.security.domain.member.exception.DuplicatePhoneNumberException;
+import study.security.domain.member.exception.NotAuthorizedException;
 import study.security.domain.member.model.Member;
 import study.security.global.error.exception.NotFoundByIdException;
+
+import java.util.Objects;
 
 import static study.security.domain.member.dto.MemberDTO.*;
 
@@ -60,5 +63,38 @@ public class MemberService {
         return member.toUserInfo();
     }
 
+    @Transactional
+    public NewNicknameDto updateUserNickname(Long memberId, UpdateMemberNicknameDto updateMemberNicknameDto) {
+        if (!Objects.equals(memberId, updateMemberNicknameDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateNickname(updateMemberNicknameDto.getNewNickname());
+        return NewNicknameDto.builder().newNickname(updateMemberNicknameDto.getNewNickname()).build();
+    }
 
+    @Transactional
+    public NewPhoneNumberDto updateUserPhoneNumber(Long memberId, UpdateMemberPhoneNumberDto updateMemberPhoneNumberDto) {
+        if (!Objects.equals(memberId, updateMemberPhoneNumberDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updatePhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber());
+        return NewPhoneNumberDto.builder().newPhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber()).build();
+    }
+
+    @Transactional
+    public NewDescriptionDto updateDescription(Long memberId, UpdateDescriptionDto updateDescriptionDto) {
+        if (!Objects.equals(memberId, updateDescriptionDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateDescription(updateDescriptionDto.getDescription());
+        return NewDescriptionDto.builder().newDescription(updateDescriptionDto.getDescription()).build();
+    }
+
+    @Transactional
+    public String updateUserPassword(UpdateUserPassword updateUserPassword, Long currentMemberId) {
+
+    }
 }

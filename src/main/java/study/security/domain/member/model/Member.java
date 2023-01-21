@@ -39,6 +39,22 @@ public class Member extends MemberBase{
         this.phoneNumber = updateUserInfo.getPhoneNumber();
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateUserPassword(String password) {
+        super.updatePassword(password);
+    }
+
     @Builder
     public Member(Long id, String email, String password, String username, String birthDate, String phoneNumber, String nickname, String description) {
         super(id, email, password, ROLE_USER);
