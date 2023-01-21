@@ -84,5 +84,44 @@ public class MemberDTO {
         private String birthDate;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RedunCheckDto{
+        private boolean exists;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserDetail{
+        private Long id;
+
+        private String userName;
+
+        private String nickname;
+
+        private String description;
+
+        private String phoneNumber;
+
+        private String email;
+
+        private String birthDate;
+
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateUserInfo{
+        private Long userId;
+        private String nickname;
+        private String phoneNumber;
+        // 프로필사진 등도 원래는 포함되어야 함. 하지만 여기서는 넣지 않겠음;
+    }
 
 }

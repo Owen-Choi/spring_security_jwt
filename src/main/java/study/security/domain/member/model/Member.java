@@ -34,6 +34,11 @@ public class Member extends MemberBase{
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
+    public void updateUserInfo(UpdateUserInfo updateUserInfo) {
+        this.nickname = updateUserInfo.getNickname();
+        this.phoneNumber = updateUserInfo.getPhoneNumber();
+    }
+
     @Builder
     public Member(Long id, String email, String password, String username, String birthDate, String phoneNumber, String nickname, String description) {
         super(id, email, password, ROLE_USER);
