@@ -92,7 +92,7 @@ public class AuthService {
     public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
-        // refreshToken이 없으면 만료됐다는 뜻인므로 만료 예외 터뜨려줌.
+        // refreshToken이 없으면 만료됐다는 뜻이므로 만료 예외 터뜨려줌.
         if (refreshByAccess == null) {
             throw new ExpireRefreshTokenException();
         }
