@@ -1,13 +1,12 @@
 package study.security.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.security.domain.member.dao.MemberRepository;
 import study.security.domain.member.dto.MemberDTO;
-import study.security.domain.member.exception.DuplicateNicknameException;
-import study.security.domain.member.exception.DuplicatePhoneNumberException;
-import study.security.domain.member.exception.NotAuthorizedException;
+import study.security.domain.member.exception.*;
 import study.security.domain.member.model.Member;
 import study.security.global.error.exception.NotFoundByIdException;
 
@@ -19,6 +18,7 @@ import static study.security.domain.member.dto.MemberDTO.*;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 이메일 중복체크용 로직, 회원가입에서 이메일 입력 EditText에서 focus가 풀릴때마다 해당 로직이 실행될 예정
     @Transactional(readOnly = true)
@@ -95,6 +95,29 @@ public class MemberService {
 
     @Transactional
     public String updateUserPassword(UpdateUserPassword updateUserPassword, Long currentMemberId) {
-
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        if(!passwordEncoder.matches(updateUserPassword.getOldPassword(), member.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+        updateUserPassword.encrypt(passwordEncoder);
+        member.updateUserPassword(updateUserPassword);
+        return "UPDATE";
     }
+
+    @Transactional
+    public String deleteUser(Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        memberRepository.delete(member);
+        return "DELETE";
+    }
+
+    @Transactional(readOnly = true)
+    public EncryptEmailDto findUserEmail(FindEmailDto findEmailDto) {
+        String userName = findEmailDto.getUserName();
+        String phoneNumber = findEmailDto.getPhoneNumber();
+        Member member = memberRepository.findByUserNameAndPhoneNumber(userName, phoneNumber).orElseThrow(UserNotFoundByUsernameAndPhoneException::new);
+        return member.encryptEmail();
+    }
+
+    // 비밀번호 찾기 메소드
 }

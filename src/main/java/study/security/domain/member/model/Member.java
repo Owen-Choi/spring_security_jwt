@@ -51,8 +51,17 @@ public class Member extends MemberBase{
         this.description = description;
     }
 
-    public void updateUserPassword(String password) {
-        super.updatePassword(password);
+    public void updateUserPassword(UpdateUserPassword updateUserPassword) {
+        super.updatePassword(updateUserPassword.getNewPassword());
+    }
+
+    public EncryptEmailDto encryptEmail() {
+        String[] subEmail = this.getEmail().split("@");
+        int asteriskNum = subEmail[0].length() - 3;
+        String asterisks = "*".repeat(asteriskNum);
+        subEmail[0] = subEmail[0].substring(0,3) + asterisks;
+        String returnEmail = subEmail[0] + "@" + subEmail[1];
+        return new EncryptEmailDto(returnEmail);
     }
 
     @Builder

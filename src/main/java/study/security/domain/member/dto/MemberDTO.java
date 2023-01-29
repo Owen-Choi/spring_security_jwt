@@ -179,6 +179,21 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UpdateUserPassword {
+        private Long userId;
+        private String oldPassword;
+        private String newPassword;
+
+        public void encrypt(PasswordEncoder passwordEncoder) {
+            this.oldPassword = passwordEncoder.encode(oldPassword);
+            this.newPassword = passwordEncoder.encode(newPassword);
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdateDescriptionDto {
         private Long userId;
         private String description;
@@ -190,5 +205,23 @@ public class MemberDTO {
     @AllArgsConstructor
     public static class NewDescriptionDto {
         private String newDescription;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EncryptEmailDto {
+        private String email;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindEmailDto {
+        private String userName;
+        private String phoneNumber;
+        private String email;
     }
 }
