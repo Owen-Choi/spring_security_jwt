@@ -124,6 +124,22 @@ public class MemberDTO {
         // 프로필사진 등도 원래는 포함되어야 함. 하지만 여기서는 넣지 않겠음;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CodeConfirmDto {
+        private boolean matches;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmailConfirmCodeDto {
+        private String email;
+        private String code;
+    }
 
     @Getter
     @Builder

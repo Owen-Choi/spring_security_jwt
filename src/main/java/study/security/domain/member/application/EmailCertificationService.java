@@ -3,8 +3,13 @@ package study.security.domain.member.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import study.security.domain.member.dto.MemberDTO;
+import study.security.domain.member.exception.EmailCertificationExpireException;
+import study.security.global.common.constants.EmailConstants;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -12,6 +17,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import static study.security.domain.member.dto.MemberDTO.*;
+import static study.security.global.common.constants.EmailConstants.*;
 
 @Service
 @Slf4j
@@ -51,7 +60,51 @@ public class EmailCertificationService {
         Random random = new Random();
 
         for(int i=0; i<8; i++) {
+            int index = random.nextInt(3);
 
+            switch(index) {
+                case 0 :
+                    key.append((char) random.nextInt(26) + 97);
+                    break;
+                case 1:
+                    key.append((char) random.nextInt(26) + 65);
+                    break;
+                case 2:
+                    key.append((random.nextInt(10)));
+                    break;
+            }
         }
+        return key.toString();
+    }
+
+    // 메일 발송
+    public void sendSimpleMessage(String to) throws Exception {
+        ePw = createKey();
+        MimeMessage message = createMessage(to);
+        try {
+            emailSender.send(message);
+            log.info("secret code = " + ePw);
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.set(to, ePw);
+            redisTemplate.expire(to, EMAIL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
+        } catch(MailException es) {
+            log.info(es.getLocalizedMessage());
+            throw new IllegalArgumentException(es.getMessage());
+        }
+    }
+
+    // 코드 검증
+    public CodeConfirmDto confirmCode(EmailConfirmCodeDto emailConfirmCodeDto) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String code = valueOperations.get(emailConfirmCodeDto.getEmail());
+        // 코드가 없으면 만료된 것.
+        if(code == null) {
+            throw new EmailCertificationExpireException();
+        }
+        // 코드가 다르면 잘못 입력한 것.
+        if(!code.equals(emailConfirmCodeDto.getCode())) {
+            return CodeConfirmDto.builder().matches(false).build();
+        }
+        return CodeConfirmDto.builder().matches(true).build();
     }
 }
