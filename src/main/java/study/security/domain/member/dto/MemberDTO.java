@@ -224,4 +224,22 @@ public class MemberDTO {
         private String phoneNumber;
         private String email;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindPasswordDto{
+        private String userName;
+        private String phoneNumber;
+        private String email;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReturnPasswordDto{
+        private String password;
+    }
 }

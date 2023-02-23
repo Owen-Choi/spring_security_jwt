@@ -65,7 +65,6 @@ public class AuthService {
         // authenticate 메서드가 실행이 될 때 CustomUserDetailsService에서 만들었던 loadUserByUsername 메서드가 실행됨.
         // TODO 원리 공부해보기
         Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
-
         // 3. 인증 정보를 기반으로 jwt 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
 
@@ -84,6 +83,12 @@ public class AuthService {
                 .userInfo(member.toUserInfo())
                 .tokenInfo(tokenInfoDTO.toTokenIssueDTO())
                 .build();
+
+        /*
+            목표는 jwt를 생성하는 것.
+            jwt를 생성하려면 authentication 객체가 필요함.
+            => authentication 객체를 생성하기 위해서는 이메일, 비밀번호가 필요함(우리의 경우)
+         */
     }
 
 

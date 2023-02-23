@@ -11,6 +11,7 @@ import study.security.domain.member.model.Member;
 import study.security.global.error.exception.NotFoundByIdException;
 
 import java.util.Objects;
+import java.util.Random;
 
 import static study.security.domain.member.dto.MemberDTO.*;
 
@@ -120,4 +121,21 @@ public class MemberService {
     }
 
     // 비밀번호 찾기 메소드
+    @Transactional
+    public ReturnPasswordDto findUserPassword(FindPasswordDto findPasswordDto) {
+        String userName = findPasswordDto.getUserName();
+        String phoneNumber = findPasswordDto.getPhoneNumber();
+        String email = findPasswordDto.getEmail();
+        Member member = memberRepository.findByUserNameAndPhoneNumberAndEmail(userName, phoneNumber, email).orElseThrow(UserNotFoundExpcetion::new);
+        String newPassword =
+    }
+
+    private String createRandomPassword() {
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(targetStringLength);
+        for(int i=0; i<targetStringLength; i++) {
+
+        }
+    }
 }
