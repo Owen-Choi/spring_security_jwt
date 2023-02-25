@@ -97,6 +97,8 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(String accessToken) {
         try{
+            // 토큰을 까보는 작업이라고 생각하면 되겠다.
+            // 넘어온 토큰의 페이로드에서 클레임을 얻고, 이 클레임이 특정 정보를 가지고 있는지, 혹은 특정 사용자가 맞는지? 등을 검사한다.
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         }catch (ExpiredJwtException e) {
             return e.getClaims();
@@ -105,7 +107,11 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            // 이 코드는 뭐하는 코드지??
+            // 원래 아래 코드가 뭐하는 코드였는지 자세히 몰랐다.
+            // 이제는 안다!
+            // parseClaimsJws 메서드를 실행함으로서 넘어온 토큰의 페이로드 (클레임)를 까보려고 하는데,
+            // 해당 명령어가 try catch로 쌓여져있다.
+            // 즉 해당 명령어를 실행할때 생기는 문제가 무엇인지, 그 문제의 종류에 따라 예외를 다르게 발생시킨다. 예외가 없으면 정상적인 토큰이다.
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         }catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
