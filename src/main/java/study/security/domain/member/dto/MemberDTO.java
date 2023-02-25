@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import study.security.domain.member.model.Member;
+import study.security.domain.model.TradeStatus;
+import study.security.domain.post.dao.PostRepository;
 import study.security.domain.token.dto.TokenDTO;
 
 import static study.security.domain.token.dto.TokenDTO.*;
@@ -241,5 +243,33 @@ public class MemberDTO {
     @AllArgsConstructor
     public static class ReturnPasswordDto{
         private String password;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetUserPost{
+        private Long postId;
+        private String thumbnail;
+        private String title;
+        private String tradeStatus;
+        private String wishCategory;
+        private Long likeCount;
+
+        public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
+            this.postId = getUserPostInterface.getPostId();
+            this.thumbnail = getUserPostInterface.getThumbnail();
+            this.title = getUserPostInterface.getTitle();
+            if(getUserPostInterface.getTradeStatus().equals("0")) {
+                this.tradeStatus = TradeStatus.TRADABLE.name();
+            } else if(getUserPostInterface.getTradeStatus().equals("1")) {
+                this.tradeStatus = TradeStatus.TRADING.name();
+            } else {
+                this.tradeStatus = TradeStatus.TRADED.name();
+            }
+            this.wishCategory = getUserPostInterface.getName();
+            this.likeCount = getUserPostInterface.getLikes();
+        }
     }
 }

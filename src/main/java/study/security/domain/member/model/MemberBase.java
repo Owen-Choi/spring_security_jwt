@@ -25,5 +25,6 @@ public class MemberBase extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    // DB에 들어갈때는 암호화되어서 들어간다.
     public void updatePassword(String pw) {this.password = pw;}
 }

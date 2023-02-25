@@ -1,6 +1,9 @@
 package study.security.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,18 +11,24 @@ import study.security.domain.member.dao.MemberRepository;
 import study.security.domain.member.dto.MemberDTO;
 import study.security.domain.member.exception.*;
 import study.security.domain.member.model.Member;
+import study.security.domain.post.dao.PostRepository;
+import study.security.global.common.constants.RandomCharacter;
 import study.security.global.error.exception.NotFoundByIdException;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static study.security.domain.member.dto.MemberDTO.*;
+import static study.security.global.common.constants.RandomCharacter.*;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PostRepository postRepository;
 
     // 이메일 중복체크용 로직, 회원가입에서 이메일 입력 EditText에서 focus가 풀릴때마다 해당 로직이 실행될 예정
     @Transactional(readOnly = true)
@@ -127,7 +136,15 @@ public class MemberService {
         String phoneNumber = findPasswordDto.getPhoneNumber();
         String email = findPasswordDto.getEmail();
         Member member = memberRepository.findByUserNameAndPhoneNumberAndEmail(userName, phoneNumber, email).orElseThrow(UserNotFoundExpcetion::new);
-        String newPassword =
+        String newPassword = createRandomPassword();
+
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .newPassword(newPassword)
+                .oldPassword("resetPassword")
+                .build();
+        updateUserPassword.encrypt(passwordEncoder);
+        member.updateUserPassword(updateUserPassword);
+        return ReturnPasswordDto.builder().password(newPassword).build();
     }
 
     private String createRandomPassword() {
@@ -135,7 +152,15 @@ public class MemberService {
         Random random = new Random();
         StringBuilder stringBuilder = new StringBuilder(targetStringLength);
         for(int i=0; i<targetStringLength; i++) {
-
+            int randomLimitedInt = (int) (random.nextFloat() * RandomCharacters.length);
+            stringBuilder.append(RandomCharacters[randomLimitedInt]);
         }
+        return stringBuilder.toString();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<GetUserPost> getUserPostDto(Long memberId, Pageable pageable) {
+        List<GetUserPost> collect = postRepository.getUserPostById(memberId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
 }
