@@ -46,7 +46,7 @@ public class JwtTokenProvider {
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())       // payload "sub" : "name:
+                .setSubject(authentication.getName())       // payload "sub" : "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth" : "ROLE_USER"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp" : 1516239022 (예시)
                 .signWith(key, SignatureAlgorithm.HS512)    // header "alg" : "HS512"
@@ -77,14 +77,7 @@ public class JwtTokenProvider {
 
         /*
             클레임에서 권한 정보 가져오기
-            Claim이란 사용자에 대한 프로퍼티나 속성을 이야기함
-            JWT는 Claim 기반임. 토큰 자체가 Claim (사용자에 대한 프로퍼티나 속성)이 됨
-            예시 :
-                    {
-                        "id":"terry"
-                        ,"role":["admin","user"]
-                        ,"company":"pepsi"
-                    }
+            아래 코드는 클레임에서 권한 정보를 가져오는 코드이다.
          */
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -107,8 +100,6 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            // 원래 아래 코드가 뭐하는 코드였는지 자세히 몰랐다.
-            // 이제는 안다!
             // parseClaimsJws 메서드를 실행함으로서 넘어온 토큰의 페이로드 (클레임)를 까보려고 하는데,
             // 해당 명령어가 try catch로 쌓여져있다.
             // 즉 해당 명령어를 실행할때 생기는 문제가 무엇인지, 그 문제의 종류에 따라 예외를 다르게 발생시킨다. 예외가 없으면 정상적인 토큰이다.

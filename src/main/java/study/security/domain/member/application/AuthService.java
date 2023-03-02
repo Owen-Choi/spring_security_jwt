@@ -59,11 +59,13 @@ public class AuthService {
          */
 
         // 1. 이메일, 비밀번호 기반으로 토큰 생성
+        // 이 토큰은 사실상 문자열만 있으면 만들 수 있는 토큰인 듯 하다. 따라서 유효한 토큰인지 검증이 필요하다.
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
 
         // 2. 실제로 검증이 이루어지는 부분.
         // authenticate 메서드가 실행이 될 때 CustomUserDetailsService에서 만들었던 loadUserByUsername 메서드가 실행됨.
         // TODO 원리 공부해보기
+        // 반환받은 Authentication 객체에 있는 권한 정보 (jwtTokenProvider.generateTokenDto에서 권한 정보를 확인하는 객체)는 어디서 오는거지??
         Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
         // 3. 인증 정보를 기반으로 jwt 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
